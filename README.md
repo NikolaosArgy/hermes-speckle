@@ -7,6 +7,8 @@ projects, query and count elements, compare versions, save checks that run on ev
 version, get a chat message when someone publishes, and look at the model in a live 3D
 viewer in Hermes Desktop.
 
+![Models from Revit, Rhino, Archicad, Tekla, Civil 3D, ETABS, Blender and IFC reach Speckle; the Speckle plugin connects Hermes Agent to them for the 3D viewer, queries and automations](assets/how-it-works.jpg)
+
 ## Install and set up
 
 ```bash
