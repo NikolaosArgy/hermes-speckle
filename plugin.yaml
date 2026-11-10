@@ -2,9 +2,9 @@ name: speckle
 version: "0.1.0"
 manifest_version: 2
 description: >-
-  Speckle for Hermes — browse, query and diff AEC/BIM models, get a message
-  when a watched model gets a new version, and see the model in a live 3D
-  viewer inside Hermes Desktop.
+  Speckle for Hermes — browse, query and diff 3D/BIM models (mainly for the
+  AECO industry), get a message when a watched model gets a new version, and
+  see the model in a live 3D viewer inside Hermes Desktop.
 author: NikolaosArgy
 license: Apache-2.0
 homepage: https://github.com/NikolaosArgy/hermes-speckle

@@ -2,8 +2,8 @@
 
 # Speckle for Hermes
 
-Work with AEC/BIM models from [Speckle](https://speckle.systems) inside Hermes: browse
-projects, query and count elements, compare versions, save checks that run on every new
+Work with 3D/BIM models (mainly for the AECO industry) from
+[Speckle](https://speckle.systems) inside Hermes: browse projects, query and count elements, compare versions, save checks that run on every new
 version, get a chat message when someone publishes, and look at the model in a live 3D
 viewer in Hermes Desktop.
 
