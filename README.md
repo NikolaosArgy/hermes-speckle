@@ -1,3 +1,5 @@
+![NOUS x SPECKLE](assets/nous-x-speckle.png)
+
 # Speckle for Hermes
 
 Work with AEC/BIM models from [Speckle](https://speckle.systems) inside Hermes: browse
