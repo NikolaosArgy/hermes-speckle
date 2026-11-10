@@ -71,8 +71,10 @@ what you have selected in the viewer.
   only to that server, never to a URL taken from a model or a message.
 - **Third-party code in the viewer.** The Desktop 3D viewer loads
   `@speckle/viewer@2.31.14` and `@speckle/objectloader2@2.31.14` from `cdn.jsdelivr.net`
-  (exact versions). It runs in a sandboxed frame, gets model objects from the plugin, and
-  never receives your token.
+  (exact versions). Every file it loads from there, those two and the 47 files they import
+  (three.js and others), is pinned with a SHA-384 integrity hash in the page's import map,
+  so the viewer refuses to run any file whose content has changed. It runs in a sandboxed
+  frame, gets model objects from the plugin, and never receives your token.
 - **Background process.** While you watch at least one model, a background thread checks
   it for new versions every `poll_seconds` (60 by default, 15 minimum). Each check is one
   GraphQL call and uses no LLM tokens until there is something to report.
@@ -91,7 +93,13 @@ what you have selected in the viewer.
 ```bash
 hermes plugins validate . --install-deps
 python -m pytest tests
+python scripts/viewer_sri.py --check   # do the CDN files still match the pinned hashes?
 ```
+
+After changing the viewer versions in `viewer/index.html`, run `python scripts/viewer_sri.py`
+to rewrite the integrity hashes. If `--check` fails without a version change, jsDelivr has
+served different bytes for a pinned file; the viewer stays blocked until you review the
+change and regenerate.
 
 ## License
 

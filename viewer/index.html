@@ -30,6 +30,61 @@
 <div id="v"></div>
 <div id="legend" hidden></div>
 <div id="s">starting viewer…</div>
+<script type="importmap">
+{
+  "integrity": {
+    "https://cdn.jsdelivr.net/npm/@speckle/objectloader2@2.31.14/+esm": "sha384-IF3p65xTrmg2zARntcEaDw1oEpWBzS8aHmeZF/tcdgWpLhSntlha6P6Z2A0Wxjtw",
+    "https://cdn.jsdelivr.net/npm/@speckle/shared@2.31.14/+esm": "sha384-dQ46dRP4O/vstPJ2KloyNigv43V5up459JpRVkB2smKqMFhPR7r6lnTidiWTQttB",
+    "https://cdn.jsdelivr.net/npm/@speckle/shared@2.31.14/viewer/state/+esm": "sha384-E3ufsgxCYVf2AxhkWChMkf2pgoek8GZ2ugx5+oVdEiuCxcFNm2cEVsaJ9GVBQhKy",
+    "https://cdn.jsdelivr.net/npm/@speckle/viewer@2.31.14/+esm": "sha384-0yK4lwb0oLlpdGko49EkTLnr31epI6Y/AGBoChnAyVVykqXeWrkjAiJsNTNggZxr",
+    "https://cdn.jsdelivr.net/npm/bidi-js@1.0.3/+esm": "sha384-hwLC+D/hf/5LDUSP2jwUlTeJgwEx6f2sw2qHYKx9yOQSQYsTvPVrV5nQDk8n3vuB",
+    "https://cdn.jsdelivr.net/npm/colornames@1.1.1/+esm": "sha384-MAeqBIoZ3XSd1RmbBLjwdkueQNYOFDbUGAjiYhRqDD4hWUjPRiwSh6fUoNkdehWY",
+    "https://cdn.jsdelivr.net/npm/dayjs@1.11.21/+esm": "sha384-FVxC/Nnw3eq+OHhYYKzQ3eL+czS+ykSKbE/U1nqNMxxkaIo70BI0x73EbkbiP7tC",
+    "https://cdn.jsdelivr.net/npm/earcut@3.0.1/+esm": "sha384-TfGAixZ8M25SOz7r4/mMn0YRiONwrTWq6xehhwumXV09auAOf88FqGzREK8HCJXi",
+    "https://cdn.jsdelivr.net/npm/find-insert-index@0.0.1/+esm": "sha384-1lp/TqZv7jRjCPqugLTV6iAzLxYcSYxDkQQeGJGzWaIhryrUifdXLMwBw8eAq3xu",
+    "https://cdn.jsdelivr.net/npm/hex-rgb@4.1.0/+esm": "sha384-k7GjaGKOutYbbjqHPwV6VSVp2JdrAQANG2m8+reH47MbnPKHGcXLiU380/dRC5CH",
+    "https://cdn.jsdelivr.net/npm/js-logger@1.6.1/+esm": "sha384-8wSgjETI9S01CS9f675buanRHu6Wnb9S7fC9C2EdR1oBdJKJJZpvz3EON9ibYNGk",
+    "https://cdn.jsdelivr.net/npm/lodash-es@4.18.1/+esm": "sha384-pGN7aXPkEHj8j+5osfuWm1u/uJ0/lHIKfGVja6mvCZqRRwp7TcD6ZSqlvf9zKXeA",
+    "https://cdn.jsdelivr.net/npm/lodash.padend@4.6.1/+esm": "sha384-5x/rRHhFJWziLRvb/ejnW5QzHrVyY8JjNwxAhfCv5UduIUTnK7LKh+JSFWiTDFgK",
+    "https://cdn.jsdelivr.net/npm/lodash.trimstart@4.5.1/+esm": "sha384-9XgmmClIH2l+1rF+R2YxJDO6LVzt4X5my8RREoXb9nzPnXrKv5dUiitvW5t5B3kj",
+    "https://cdn.jsdelivr.net/npm/lodash.words@4.2.0/+esm": "sha384-QpMl3ewPtZiMU2aLD/VX/lnMW2e3/noge6nOxgQt4Klb/JUMWDvkI421zEuCnkBS",
+    "https://cdn.jsdelivr.net/npm/mergesort@0.0.1/+esm": "sha384-99UPsAlTtU2KAoNeBogF18HkAg78NdLTALPIYi6owZ5gMs8cAGwngyhaBTQpfLDf",
+    "https://cdn.jsdelivr.net/npm/polylabel@2.0.1/+esm": "sha384-auvTE39BmWP+uBmUpEgVIekFo8TngNDtkFlm4yGj4ws2QLjlyosg6lMjf7G1qPi8",
+    "https://cdn.jsdelivr.net/npm/rgb-hex@3.0.0/+esm": "sha384-fFIuXf9YdTLsuqkj7q8LzRgZiCN8mBHBMFBHnCXanOmjKxNtkVHZ2jgcBup0WcXd",
+    "https://cdn.jsdelivr.net/npm/string-to-color@2.2.2/+esm": "sha384-OdVXlYJseIBHBzUGwsCXZ7B12+5VSziU+yZNJIdSCF6s6tKS66Vv9QxVqm9IuuWW",
+    "https://cdn.jsdelivr.net/npm/three-mesh-bvh@0.5.17/+esm": "sha384-S/iHJFbt8KgM0hcIHHPe3TveWF7pLlcNE/Fu8UQfnNrPHIvxZ/GyKU7DddefXVn6",
+    "https://cdn.jsdelivr.net/npm/three@0.140.2/+esm": "sha384-A5AxSfbekjsgvXisH66JEjaPPofhF7OB/KBetGNRaq+RYgu71OZKTqisQT+TLCjU",
+    "https://cdn.jsdelivr.net/npm/three@0.140.2/examples/jsm/libs/stats.module.js/+esm": "sha384-k4Ljr1BnMt/z4IWvWwvCGPtPb7hNI35EdTukkQgswe5nQtGDT54BTHX0Z/HWd3M2",
+    "https://cdn.jsdelivr.net/npm/three@0.140.2/examples/jsm/lines/LineMaterial.js/+esm": "sha384-PBq+LkGHZaXHZ2yTNNMwnyqnH8XTt4SSOqC3VVa4zf/ASpFZAAE/y98fSZugGSi9",
+    "https://cdn.jsdelivr.net/npm/three@0.140.2/examples/jsm/lines/LineSegments2.js/+esm": "sha384-06mAflm55a7tKsPcyojRvPAmN1181On8Myk6BpIeoPiTviXtK6z3uThIENMUgxvH",
+    "https://cdn.jsdelivr.net/npm/three@0.140.2/examples/jsm/lines/LineSegmentsGeometry.js/+esm": "sha384-OVZSjdj63wSdcUDdf3BFfX+r0a/9PaLfVBE+xvNlbmBDyme//HvAN3hS3dDrSfNd",
+    "https://cdn.jsdelivr.net/npm/three@0.140.2/examples/jsm/loaders/EXRLoader.js/+esm": "sha384-Y94y2lktYum3WGBXpOgfzr4O5zskucgtgRtpjhSmYlpv4b0raHo24mf7oP35CN+C",
+    "https://cdn.jsdelivr.net/npm/three@0.140.2/examples/jsm/loaders/FontLoader.js/+esm": "sha384-gTXhbdk8utjMTRzMigJokM1eINQ78BSqy1L/PLNmQrlmAxxDfZXJpy7H7m7uAwHF",
+    "https://cdn.jsdelivr.net/npm/three@0.140.2/examples/jsm/loaders/OBJLoader.js/+esm": "sha384-larmNOy90d9FyW2ir6VYTdYff9WZoKYRBMFtDflcmsEku7+YyHH5tZ7eMNoHV5Ji",
+    "https://cdn.jsdelivr.net/npm/three@0.140.2/examples/jsm/loaders/RGBELoader.js/+esm": "sha384-kbEyA5XLwamUDK9tW6bHDgG2YgBI2RndsOV1BVaJ9XFtuB1uEzMJSaLZIxQkExZW",
+    "https://cdn.jsdelivr.net/npm/three@0.140.2/examples/jsm/math/OBB.js/+esm": "sha384-oiEDHpa42xR3jaf8DdiQFSK2SNtaidAenw58PaSdYv7+BPBgOjiBaHt7zJVMKFwG",
+    "https://cdn.jsdelivr.net/npm/three@0.140.2/examples/jsm/math/SimplexNoise.js/+esm": "sha384-oNtp6m4OatbE7/oiXGPyj+sHrJxMFtSTc3xbL0hKW4kbGV4RjzJXoj9V12k989DR",
+    "https://cdn.jsdelivr.net/npm/three@0.140.2/examples/jsm/postprocessing/Pass.js/+esm": "sha384-JoCQOBv81+XLYsD/Us1rJgEi0LirbfV+4Gsc5bPP92kMEiPMZqGr/4V/pCNacb++",
+    "https://cdn.jsdelivr.net/npm/three@0.140.2/examples/jsm/shaders/CopyShader.js/+esm": "sha384-kM+BcbpAbtYAPUm0Kae0QyDcVn0qMvJN5fjNVuHUh6hReORD6wLMEXV2UR7Vzk+L",
+    "https://cdn.jsdelivr.net/npm/three@0.140.2/examples/jsm/shaders/DepthLimitedBlurShader.js/+esm": "sha384-OGpZEfJz43Y1s2DkNhR49Q3KEC0AREjP2j+mEKSiiUvc6MmAqW6QJlVUHwWvx9OD",
+    "https://cdn.jsdelivr.net/npm/three@0.140.2/examples/jsm/utils/BufferGeometryUtils.js/+esm": "sha384-8gWalRiwDv4ZZBNAkgUND+J31QlnIb0oMu66wZpSTJq4CseBaW8n6S6LNcLJWiCM",
+    "https://cdn.jsdelivr.net/npm/three@0.140.2/src/math/MathUtils.js/+esm": "sha384-o4Kp2OtA2MF25lvHYbVJuYEqFn0byKO0MqNFkz5NwKujIQ6l1J8PWTXDTeVKIwsq",
+    "https://cdn.jsdelivr.net/npm/three@0.145.0/+esm": "sha384-1jWFf+ede65QAVCtEGOCaMLZrVMAjePr5RTXTOMKUL8WU2/XMIBEiLXT5xLwLto9",
+    "https://cdn.jsdelivr.net/npm/three@0.175.0/+esm": "sha384-9XnFXJdcX8Bm2tYlG8VfLQCw52R0hdmLYew6oaf3K3W3Prj0nsDXmp7SnZp/LBqb",
+    "https://cdn.jsdelivr.net/npm/three@0.187.0/+esm": "sha384-ze9rouZ3DEUD4ATzkg5o47ZtnjpXxqkAx/0fmOVImAjPXsqO16tyVVwTa9kC+YHZ",
+    "https://cdn.jsdelivr.net/npm/tinyqueue@3.0.0/+esm": "sha384-bU7lTy3mBqhwXTZxzCq5Frz0HGwijhD0UbwgjojLkKP0oGn04DEmi6Z7s7nD3x7Q",
+    "https://cdn.jsdelivr.net/npm/tree-model@1.0.7/+esm": "sha384-NmVdHzS+/fBBnfPLyNvlT63bBveVZrm4qa5arGXsR/aujAcP0XRYeh92UOirIERS",
+    "https://cdn.jsdelivr.net/npm/troika-three-text@0.52.4/+esm": "sha384-+C6p3SB5V48Lv5IFzoBcgJ8Lfan4udC04l6kktrNIJTyEPv6lVXVtOcY2N2JOxQ2",
+    "https://cdn.jsdelivr.net/npm/troika-three-text@0.52.4/src/BatchedText.js/+esm": "sha384-U4ydr2V60TA3rdljQFPpSSZc781/OIxCcPk6wg2wFbUu4L5tY8BuCY0qAtiigsSd",
+    "https://cdn.jsdelivr.net/npm/troika-three-utils/+esm": "sha384-r8RkJwHF+4A/t9ZPmq/oc4K87PraKoWm3BHfSSPttr92QWtM0d3bnKQzdL6S5p9D",
+    "https://cdn.jsdelivr.net/npm/troika-three-utils@0.52.4/+esm": "sha384-qnT2D0fuzhHX1bJFt5mFM92y6ea3IsFTaivbLZKukAbXs8bVt/FCMH1fzl0aXhVc",
+    "https://cdn.jsdelivr.net/npm/troika-worker-utils@0.52.0/+esm": "sha384-PJFcE9hi9KTe0/GkcUorKc4YfCx6vBwWOF3flokKbkufJ5tbHwjw9fRAkUq1nnWX",
+    "https://cdn.jsdelivr.net/npm/true-myth@8.6.0/result/+esm": "sha384-PnNjhWn2Qzdjunlro/8WOmDYGVSGv/KuNP23dzZluOcNYhEaFu/C+CWEmqiGxduu",
+    "https://cdn.jsdelivr.net/npm/webgl-sdf-generator@1.1.1/+esm": "sha384-6ANkDazlTyn49hxWPD2bGK+6rrK+HVbpj5Vs6ahwo2kLrZVgdMCwtwAUoYez+LmB",
+    "https://cdn.jsdelivr.net/npm/zod@3.25.76/+esm": "sha384-03uBibs2u1J/ZIwmQeD7rXGzJaZeP6TkWKhj+EB733Ci/NVJbLzN710rxLj9cS22"
+  }
+}
+</script>
 <script type="module">
 const status = (m) => {
   document.getElementById('s').textContent = m
