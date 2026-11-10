@@ -31,6 +31,17 @@ async function loadViewerPage() {
   }
 }
 
+// Fetched once and shared by every viewer frame (the pane and each inline card); a failure is
+// not cached, so the next frame retries.
+let viewerCode = null
+function loadViewerCode() {
+  if (!viewerCode) {
+    viewerCode = restRef('/viewer-bundle').then((r) => r.code)
+    viewerCode.catch(() => { viewerCode = null })
+  }
+  return viewerCode
+}
+
 function errorText(e) {
   return String((e && (e.detail || e.message)) || e)
 }
@@ -50,6 +61,13 @@ function SpeckleFrame({ url, className }) {
   useEffect(() => {
     const onMessage = (e) => {
       if (!ref.current || e.source !== ref.current.contentWindow || !e.data) return
+      if (e.data.type === 'speckle-viewer-need-code') {
+        const frame = ref.current.contentWindow
+        loadViewerCode().then(
+          (code) => frame.postMessage({ type: 'speckle-viewer-code', code }, '*'),
+          (err) => frame.postMessage({ type: 'speckle-viewer-code-error', error: 'could not load the viewer: ' + errorText(err) }, '*')
+        )
+      }
       if (e.data.type === 'speckle-viewer-ready') setReady(true)
       if (e.data.type === 'speckle-viewer-status') {
         setStatus(e.data.msg)
@@ -235,6 +253,7 @@ export default {
     $focus = atom(null)
     $viewerSrc = atom(null)
     $command = atom(null)
+    viewerCode = null
     restRef = (path, opts) => ctx.rest(path, opts)
     ctxOs = ctx.os
 

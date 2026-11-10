@@ -43,6 +43,25 @@ def is_configured_server(url: str) -> bool:
     return _host(url) == _host(server_url())
 
 
+class _TokenStaysOnHost(urllib.request.HTTPRedirectHandler):
+    """urllib copies every header onto a redirect, Authorization included and whatever the new
+    host, so a server redirecting a preview to its file storage would hand that host the token."""
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        new = super().redirect_request(req, fp, code, msg, headers, newurl)
+        if new is not None and _host(newurl) != _host(req.full_url):
+            new.remove_header("Authorization")
+        return new
+
+
+_opener = urllib.request.build_opener(_TokenStaysOnHost)
+
+
+def open_url(req: urllib.request.Request, timeout: float):
+    """urlopen for requests that may carry the token: it is dropped on a redirect off the host."""
+    return _opener.open(req, timeout=timeout)
+
+
 _SSO_CODES = {"SSO_SESSION_MISSING_OR_EXPIRED_ERROR"}
 _UNAUTHORIZED_CODES = {"UNAUTHORIZED"}
 _FORBIDDEN_CODES = {"FORBIDDEN"}
@@ -213,7 +232,7 @@ def download_preview(ref: ModelRef, version: Any, dest_dir: Path) -> Optional[Pa
         url, headers={"Authorization": f"Bearer {token()}", "User-Agent": "hermes-speckle/0.1"}
     )
     try:
-        with urllib.request.urlopen(req, timeout=30) as resp:
+        with open_url(req, timeout=30) as resp:
             if "image" not in (resp.headers.get("Content-Type") or ""):
                 return None
             dest.write_bytes(resp.read())

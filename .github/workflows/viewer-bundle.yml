@@ -1,0 +1,24 @@
+name: viewer bundle
+
+# Rebuilds viewer/dist from viewer/package-lock.json and fails if the committed bundle or its
+# licence notices differ, so the shipped 3.7 MB file is provably the locked npm packages.
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  reproducible-build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: viewer
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: node build.mjs --check

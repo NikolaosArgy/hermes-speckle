@@ -65,16 +65,25 @@ what you have selected in the viewer.
 
 ## What this plugin does on your machine
 
-- **Network calls.** The plugin talks to your configured Speckle server only
-  (`app.speckle.systems` by default): GraphQL for projects, models and versions, model
-  downloads, preview images, and issue creation when you ask for one. Your token is sent
-  only to that server, never to a URL taken from a model or a message.
-- **Third-party code in the viewer.** The Desktop 3D viewer loads
-  `@speckle/viewer@2.31.14` and `@speckle/objectloader2@2.31.14` from `cdn.jsdelivr.net`
-  (exact versions). Every file it loads from there, those two and the 47 files they import
-  (three.js and others), is pinned with a SHA-384 integrity hash in the page's import map,
-  so the viewer refuses to run any file whose content has changed. It runs in a sandboxed
-  frame, gets model objects from the plugin, and never receives your token.
+- **Network connections.** All of them are made by the plugin's Python side, inside Hermes:
+
+  | Where | What for | Your token |
+  |---|---|---|
+  | Your Speckle server (`server_url`, `app.speckle.systems` by default): `/graphql` | Projects, models, versions, new-version checks, issues you ask for | Sent |
+  | The same server: `/api/v2/…/artifacts` | The list of a version's model files | Sent |
+  | The same server: `/preview/…` | Preview images | Sent |
+  | The file storage your server points to (signed links from the list above) | Downloading the model files | Not sent |
+
+  The token never goes to another host: not to a URL taken from a model or a message, and
+  not along a redirect, which drops it whenever the host changes. The file storage is
+  whatever your Speckle server uses; for `app.speckle.systems` it is Speckle's own cloud
+  storage. Its links are signed by the server and need no token.
+- **The 3D viewer makes no network connections.** The viewer library (`@speckle/viewer`
+  2.31.14 with three.js and its other dependencies) ships inside the plugin as
+  `viewer/dist/speckle-viewer.js`, built from the pinned `viewer/package-lock.json`; nothing
+  is loaded from a CDN. It runs in Hermes's sandboxed frame, gets the model from the
+  plugin, and never receives your token. The licences of the 28 packages in it are in
+  [`viewer/dist/THIRD_PARTY_NOTICES.txt`](viewer/dist/THIRD_PARTY_NOTICES.txt).
 - **Background process.** While you watch at least one model, a background thread checks
   it for new versions every `poll_seconds` (60 by default, 15 minimum). Each check is one
   GraphQL call and uses no LLM tokens until there is something to report.
@@ -93,13 +102,23 @@ what you have selected in the viewer.
 ```bash
 hermes plugins validate . --install-deps
 python -m pytest tests
-python scripts/viewer_sri.py --check   # do the CDN files still match the pinned hashes?
 ```
 
-After changing the viewer versions in `viewer/index.html`, run `python scripts/viewer_sri.py`
-to rewrite the integrity hashes. If `--check` fails without a version change, jsDelivr has
-served different bytes for a pinned file; the viewer stays blocked until you review the
-change and regenerate.
+### The viewer bundle
+
+`viewer/dist/` is built, not written by hand, and committed so the plugin installs without
+Node. To check that it matches the locked packages (CI runs this on every push):
+
+```bash
+cd viewer
+npm ci --ignore-scripts
+node build.mjs --check
+```
+
+To update the viewer, change the versions in `viewer/package.json`, run `npm install`, then
+`node build.mjs`, and commit `package-lock.json` and `dist/` together. The build stops if a
+bundled package has no licence text; add one under `viewer/licenses/` and map it in
+`LICENCE_OVERRIDES` in `build.mjs`.
 
 ## License
 

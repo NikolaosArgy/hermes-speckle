@@ -1,0 +1,21 @@
+{
+  "name": "hermes-speckle-viewer-bundle",
+  "private": true,
+  "description": "Build-only project: bundles @speckle/viewer into dist/ for the plugin's sandboxed viewer frame. Users never install it.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "check": "node build.mjs --check"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@speckle/objectloader2": "2.31.14",
+    "@speckle/viewer": "2.31.14"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2"
+  }
+}

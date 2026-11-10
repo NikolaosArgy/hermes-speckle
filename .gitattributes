@@ -1,0 +1,3 @@
+# The rebuild check compares bytes, so the built files must not get line-ending conversion.
+viewer/dist/** -text
+viewer/package-lock.json -text

@@ -45,10 +45,19 @@ def _request(url: str, token: str | None, body: dict | None = None) -> urllib.re
     return urllib.request.Request(url, data=data, headers=headers)
 
 
+_VIEWER = Path(__file__).resolve().parent.parent / "viewer"
+
+
 @router.get("/viewer-page")
 async def viewer_page():
-    page = Path(__file__).resolve().parent.parent / "viewer" / "index.html"
-    return {"html": page.read_text(encoding="utf-8")}
+    return {"html": (_VIEWER / "index.html").read_text(encoding="utf-8")}
+
+
+@router.get("/viewer-bundle")
+async def viewer_bundle():
+    """The bundled @speckle/viewer (viewer/dist, built from viewer/package-lock.json), which the
+    Desktop half posts into the sandboxed viewer frame."""
+    return {"code": (_VIEWER / "dist" / "speckle-viewer.js").read_text(encoding="utf-8")}
 
 
 _VERSION_QUERY = """
@@ -72,7 +81,7 @@ async def model_info(url: str):
     token = _token_for(url)
     variables = {"p": match["p"], "m": match["m"], "v": match["v"] or "", "byId": bool(match["v"])}
     try:
-        with urllib.request.urlopen(
+        with _core("speckle_api").open_url(
             _request(f"{server}/graphql", token, {"query": _VERSION_QUERY, "variables": variables}), timeout=20
         ) as resp:
             data = (json.loads(resp.read()).get("data") or {}).get("project") or {}
@@ -86,7 +95,7 @@ async def model_info(url: str):
     if version.get("previewUrl"):
         try:
             preview_req = _request(version["previewUrl"], _token_for(version["previewUrl"]))
-            with urllib.request.urlopen(preview_req, timeout=20) as resp:
+            with _core("speckle_api").open_url(preview_req, timeout=20) as resp:
                 kind = resp.headers.get("Content-Type") or ""
                 if kind.startswith("image/"):
                     preview = f"data:{kind};base64," + base64.b64encode(resp.read()).decode()
