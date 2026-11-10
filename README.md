@@ -52,6 +52,20 @@ link into the Speckle pane or into a message to Hermes.
 | Tekla | [tekla/demo model](https://app.speckle.systems/projects/8be1007be1/models/c23632bf47) |
 | Civil 3D | [civil3d/intro demo](https://app.speckle.systems/projects/8be1007be1/models/f5cfee3ad8) |
 
+## Screenshots
+
+A Revit model in the Speckle pane, with a model card in the chat:
+
+![Hermes Desktop with the Revit tower open in the Speckle pane on the right and the conversation on the left, including an inline model card](assets/screenshots/model-in-pane.jpg)
+
+Hermes colouring the model by category, with the legend in the viewer and the counts in the chat:
+
+![The Revit tower coloured by category in the Speckle pane, with a category legend and a matching colour table in the chat](assets/screenshots/colour-by-category.jpg)
+
+The empty pane, ready for a model URL:
+
+![The Speckle pane before a model is loaded, asking for a model URL, next to a new Hermes session](assets/screenshots/empty-pane.jpg)
+
 ## What you can ask
 
 - "What's in this model?" with a model URL: element counts per category and level.
