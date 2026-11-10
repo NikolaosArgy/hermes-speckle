@@ -1,0 +1,5 @@
+{
+  "name": "speckle",
+  "label": "Speckle",
+  "api": "plugin_api.py"
+}

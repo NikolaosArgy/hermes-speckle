@@ -1,0 +1,215 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!--
+  Guest page for Hermes Desktop's SandboxedFrame (opaque origin, allow-scripts only).
+  It never runs in the Desktop renderer realm: the Desktop half fetches this file from the
+  plugin backend and mounts it as a data: URL inside the sandboxed frame. It holds no
+  credentials: the backend receives the model and posts the objects in.
+  Elements are addressed by applicationId (the plugin's element key, stable across versions);
+  the page maps them to the viewer's object ids after each load.
+-->
+<style>
+  /* The viewer canvas clears to transparent, so this page background is the scene's backdrop. */
+  :root { color-scheme: dark; }
+  html, body, #v { margin: 0; height: 100%; width: 100%; overflow: hidden; background: #0d1015; }
+  #s { position: absolute; left: 10px; bottom: 8px; font: 11px system-ui; color: #8a8a8a; pointer-events: none; }
+  #legend { position: absolute; left: 8px; top: 8px; max-width: 60%; max-height: calc(100% - 40px); overflow: auto;
+    font: 11px/1.45 system-ui; color: #eee; background: rgba(24, 24, 24, .78); border-radius: 6px; padding: 6px 8px; }
+  #legend[hidden] { display: none; }
+  #legend .head { display: flex; gap: 8px; align-items: baseline; font-weight: 600; margin-bottom: 3px; }
+  #legend .head span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #legend button { margin-left: auto; border: 0; background: none; color: #bbb; cursor: pointer; font: inherit; padding: 0; }
+  #legend .row { display: flex; gap: 6px; align-items: center; white-space: nowrap; }
+  #legend .sw { width: 10px; height: 10px; border-radius: 2px; flex: none; }
+  #legend .n { margin-left: auto; padding-left: 10px; color: #aaa; }
+</style>
+</head>
+<body>
+<div id="v"></div>
+<div id="legend" hidden></div>
+<div id="s">starting viewer…</div>
+<script type="module">
+const status = (m) => {
+  document.getElementById('s').textContent = m
+  parent.postMessage({ type: 'speckle-viewer-status', msg: String(m) }, '*')
+}
+let viewer, V, OL, MemoryLoader, filtering, selection, camera, current = 0
+let loading = Promise.resolve()
+let byApp = new Map() // applicationId -> viewer object id (elements only)
+let byId = new Map() // viewer object id -> applicationId
+let selected = []
+
+async function boot() {
+  V = await import('https://cdn.jsdelivr.net/npm/@speckle/viewer@2.31.14/+esm')
+  OL = await import('https://cdn.jsdelivr.net/npm/@speckle/objectloader2@2.31.14/+esm')
+  // Objects arrive already received (bundle, via receive3) from the plugin backend, so the
+  // loader reads them from memory: no server fetch, no token, no IndexedDB.
+  MemoryLoader = class extends V.SpeckleLoader {
+    initObjectLoader(_resource, _token, _cache, objects) {
+      return OL.ObjectLoader2Factory.createFromObjects(objects)
+    }
+  }
+  viewer = new V.Viewer(document.getElementById('v'), { ...V.DefaultViewerParams, verbose: false })
+  await viewer.init()
+  camera = viewer.createExtension(V.CameraController)
+  selection = viewer.createExtension(V.SelectionExtension)
+  filtering = viewer.createExtension(V.FilteringExtension)
+  // Registered after SelectionExtension's own handler, so this runs second and widens its
+  // pick (a display mesh or instance) to the whole element the user means.
+  viewer.on(V.ViewerEvent.ObjectClicked, onClicked)
+  status('ready')
+  parent.postMessage({ type: 'speckle-viewer-ready' }, '*')
+}
+
+function indexElements() {
+  byApp = new Map()
+  byId = new Map()
+  viewer.getWorldTree().walk((node) => {
+    const raw = node.model.raw
+    if (raw && raw.applicationId && raw.speckle_type && raw.speckle_type.endsWith('DataObject')) {
+      byApp.set(raw.applicationId, raw.id)
+      byId.set(raw.id, raw.applicationId)
+    }
+    return true
+  })
+}
+
+function elementOf(node) {
+  for (let n = node; n; n = n.parent) {
+    const raw = n.model && n.model.raw
+    if (raw && byId.has(raw.id)) return raw.id
+  }
+  return null
+}
+
+function publishSelection() {
+  parent.postMessage({ type: 'speckle-selection', ids: selected.map((id) => byId.get(id)) }, '*')
+}
+
+function onClicked(event) {
+  const id = event && event.hits && event.hits.length ? elementOf(event.hits[0].node) : null
+  if (!id) {
+    selection.clearSelection()
+    if (selected.length) { selected = []; publishSelection() }
+    return
+  }
+  if (event.multiple) {
+    selected = selected.includes(id) ? selected.filter((s) => s !== id) : [...selected, id]
+  } else {
+    selected = [id]
+  }
+  selected.length ? selection.selectObjects(selected, false) : selection.clearSelection()
+  publishSelection()
+}
+
+async function load(resource, objects) {
+  const run = ++current
+  loading = (async () => {
+    try {
+      status(`building ${objects.length.toLocaleString()} objects…`)
+      showLegend(null)
+      await viewer.unloadAll()
+      const loader = new MemoryLoader(viewer.getWorldTree(), resource, undefined, false, objects)
+      await viewer.loadObject(loader, true)
+      if (run !== current) return
+      indexElements()
+      if (selected.length) { selected = []; publishSelection() }
+      status('')
+    } catch (e) {
+      if (run === current) status('could not show model: ' + (e && e.message || e))
+    }
+  })()
+  return loading
+}
+
+function viewerIds(appIds) {
+  return (appIds || []).map((a) => byApp.get(a)).filter(Boolean)
+}
+
+function zoomTo(ids) {
+  camera.setCameraView(ids && ids.length ? ids : undefined, true)
+}
+
+function showLegend(legend) {
+  const box = document.getElementById('legend')
+  box.replaceChildren()
+  if (!legend) { box.hidden = true; return }
+  const head = document.createElement('div')
+  head.className = 'head'
+  const title = document.createElement('span')
+  title.textContent = legend.title
+  title.title = legend.title
+  const close = document.createElement('button')
+  close.textContent = '✕'
+  close.title = 'Clear colors'
+  close.onclick = () => run({ action: 'reset' })
+  head.append(title, close)
+  box.append(head)
+  for (const g of legend.groups) {
+    const row = document.createElement('div')
+    row.className = 'row'
+    const sw = document.createElement('span')
+    sw.className = 'sw'
+    sw.style.background = g.color
+    const label = document.createElement('span')
+    label.textContent = g.value
+    const n = document.createElement('span')
+    n.className = 'n'
+    n.textContent = String(g.count ?? g.ids.length)
+    row.append(sw, label, n)
+    box.append(row)
+  }
+  box.hidden = false
+}
+
+// Commands from Hermes (the speckle_viewer tool, via the Desktop half). Ids are applicationIds.
+async function run(cmd) {
+  await loading
+  if (!cmd || !byApp.size) return
+  if (cmd.action === 'reset') {
+    filtering.resetFilters()
+    selection.clearSelection()
+    showLegend(null)
+    if (selected.length) { selected = []; publishSelection() }
+    zoomTo(null)
+    return
+  }
+  if (cmd.action === 'isolate') {
+    const ids = viewerIds(cmd.ids)
+    filtering.resetFilters()
+    showLegend(null)
+    filtering.isolateObjects(ids, 'hermes', true, true)
+    zoomTo(ids)
+    return
+  }
+  if (cmd.action === 'select') {
+    selected = viewerIds(cmd.ids)
+    selected.length ? selection.selectObjects(selected, false) : selection.clearSelection()
+    publishSelection()
+    if (cmd.zoom !== false) zoomTo(selected)
+    return
+  }
+  if (cmd.action === 'color') {
+    filtering.resetFilters()
+    const groups = cmd.groups.map((g) => ({ objectIds: viewerIds(g.ids), color: g.color }))
+    const all = groups.flatMap((g) => g.objectIds)
+    const painted = groups.filter((g) => g.objectIds.length)
+    if (cmd.isolate && all.length) filtering.isolateObjects(all, 'hermes', true, true)
+    if (painted.length) filtering.setUserObjectColors(painted)
+    showLegend({ title: cmd.title, groups: cmd.groups })
+    zoomTo(cmd.isolate && all.length ? all : null)
+  }
+}
+
+window.addEventListener('message', (e) => {
+  if (e.source !== parent || !e.data) return
+  if (e.data.type === 'speckle-load') load(e.data.resource, e.data.objects)
+  if (e.data.type === 'speckle-status') status(e.data.msg)
+  if (e.data.type === 'speckle-command') run(e.data.command).catch((err) => status('viewer command failed: ' + (err && err.message || err)))
+})
+boot().catch((e) => status('viewer failed to start: ' + (e && e.message || e)))
+</script>
+</body>
+</html>

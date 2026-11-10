@@ -1,0 +1,56 @@
+name: speckle
+version: "0.1.0"
+manifest_version: 2
+description: >-
+  Speckle for Hermes — browse, query and diff AEC/BIM models, get a message
+  when a watched model gets a new version, and see the model in a live 3D
+  viewer inside Hermes Desktop.
+author: NikolaosArgy
+license: Apache-2.0
+homepage: https://github.com/NikolaosArgy/hermes-speckle
+tags: [aec, bim, 3d, speckle, revit, ifc]
+requires_hermes: ">=0.22"
+
+provides_tools:
+  - speckle_list_projects
+  - speckle_list_models
+  - speckle_list_versions
+  - speckle_model_summary
+  - speckle_query_objects
+  - speckle_diff_versions
+  - speckle_checks
+  - speckle_show_model
+  - speckle_viewer
+  - speckle_create_issue
+  - speckle_watch_model
+  - speckle_unwatch_model
+  - speckle_list_watches
+provides_hooks:
+  - on_session_start
+  - pre_llm_call
+
+requires_env:
+  - name: SPECKLE_TOKEN
+    description: >-
+      Speckle personal access token, made just for Hermes. Scopes: profile:read,
+      streams:read (plus streams:write to raise issues). It sees what your account
+      sees, including private projects you are a member of; revoke it any time in
+      your developer settings.
+    url: https://app.speckle.systems/settings/user/developer-settings
+    secret: true
+
+config_schema:
+  server_url:
+    type: str
+    default: https://app.speckle.systems
+    label: Speckle server
+    description: Base URL of the Speckle server the token belongs to.
+  poll_seconds:
+    type: int
+    default: 60
+    label: Watch interval (seconds)
+    description: How often watched models are checked for new versions.
+
+python_dependencies:
+  # bundle_model reads specklepy bundle relation maps; keep the pin to the tested minor.
+  - "specklepy[bundle]>=2026.9.0,<2026.10"
