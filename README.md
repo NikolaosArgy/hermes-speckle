@@ -43,6 +43,7 @@ link into the Speckle pane or into a message to Hermes.
 |---|---|
 | IFC | [ifc/tower](https://app.speckle.systems/projects/8be1007be1/models/946bacf6b4) |
 | Revit | [revit/speckle tower revit 2025](https://app.speckle.systems/projects/8be1007be1/models/cc7578012d) |
+| Archicad | [archicad/hillside_house](https://app.speckle.systems/projects/8be1007be1/models/33991f6f25) |
 | Rhino | [rhino/demo model](https://app.speckle.systems/projects/8be1007be1/models/4a57ce65f9) |
 | Blender | [blender/demo model](https://app.speckle.systems/projects/8be1007be1/models/b2ec93b6c5) |
 | ETABS | [etabs/sample model with results](https://app.speckle.systems/projects/8be1007be1/models/16005338a6) |
