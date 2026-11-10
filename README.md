@@ -34,6 +34,21 @@ to the workspace in your browser and ask again.
 Requires Hermes 0.22 or newer. The plugin reads models in Speckle's bundle format, so
 versions published by older connectors need publishing again from a current connector.
 
+## Try it
+
+These public models from Speckle's demo project open for any Speckle account. Paste a
+link into the Speckle pane or into a message to Hermes.
+
+| Published from | Model |
+|---|---|
+| IFC | [ifc/tower](https://app.speckle.systems/projects/8be1007be1/models/946bacf6b4) |
+| Revit | [revit/speckle tower revit 2025](https://app.speckle.systems/projects/8be1007be1/models/cc7578012d) |
+| Rhino | [rhino/demo model](https://app.speckle.systems/projects/8be1007be1/models/4a57ce65f9) |
+| Blender | [blender/demo model](https://app.speckle.systems/projects/8be1007be1/models/b2ec93b6c5) |
+| ETABS | [etabs/sample model with results](https://app.speckle.systems/projects/8be1007be1/models/16005338a6) |
+| Tekla | [tekla/demo model](https://app.speckle.systems/projects/8be1007be1/models/c23632bf47) |
+| Civil 3D | [civil3d/intro demo](https://app.speckle.systems/projects/8be1007be1/models/f5cfee3ad8) |
+
 ## What you can ask
 
 - "What's in this model?" with a model URL: element counts per category and level.
