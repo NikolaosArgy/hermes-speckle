@@ -1,4 +1,4 @@
-![NOUS x SPECKLE](assets/nous-x-speckle.png)
+![NOUS x SPECKLE](assets/nous-x-speckle.jpg)
 
 # Speckle for Hermes
 
