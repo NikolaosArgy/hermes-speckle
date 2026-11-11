@@ -77,12 +77,16 @@ async def model_info(url: str):
     match = _MODEL_RE.search(url)
     if not match:
         raise HTTPException(400, "not a Speckle model URL")
-    server = f"{urlparse(url).scheme}://{urlparse(url).netloc}"
+    speckle_api = _core("speckle_api")
+    speckle_api.configure(server_url=_server_url())
+    # The URL can come from model output (a ::speckle-model directive), so it never picks the host.
+    if not speckle_api.is_configured_server(url):
+        raise HTTPException(403, f"only models on the configured server ({_server_url()}) can be shown")
     token = _token_for(url)
     variables = {"p": match["p"], "m": match["m"], "v": match["v"] or "", "byId": bool(match["v"])}
     try:
-        with _core("speckle_api").open_url(
-            _request(f"{server}/graphql", token, {"query": _VERSION_QUERY, "variables": variables}), timeout=20
+        with speckle_api.open_url(
+            _request(f"{_server_url()}/graphql", token, {"query": _VERSION_QUERY, "variables": variables}), timeout=20
         ) as resp:
             data = (json.loads(resp.read()).get("data") or {}).get("project") or {}
     except Exception as exc:
@@ -92,10 +96,10 @@ async def model_info(url: str):
         raise HTTPException(404, "model or version not found (or not visible to this token)")
 
     preview = None
-    if version.get("previewUrl"):
+    if version.get("previewUrl") and speckle_api.is_configured_server(version["previewUrl"]):
         try:
-            preview_req = _request(version["previewUrl"], _token_for(version["previewUrl"]))
-            with _core("speckle_api").open_url(preview_req, timeout=20) as resp:
+            preview_req = _request(version["previewUrl"], token)
+            with speckle_api.open_url(preview_req, timeout=20) as resp:
                 kind = resp.headers.get("Content-Type") or ""
                 if kind.startswith("image/"):
                     preview = f"data:{kind};base64," + base64.b64encode(resp.read()).decode()

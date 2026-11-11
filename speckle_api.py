@@ -43,22 +43,30 @@ def is_configured_server(url: str) -> bool:
     return _host(url) == _host(server_url())
 
 
-class _TokenStaysOnHost(urllib.request.HTTPRedirectHandler):
-    """urllib copies every header onto a redirect, Authorization included and whatever the new
-    host, so a server redirecting a preview to its file storage would hand that host the token."""
+class OffServerRequest(ValueError):
+    pass
+
+
+class _StayOnServer(urllib.request.HTTPRedirectHandler):
+    """Every hop is re-checked: urllib would follow a redirect to any host with every header,
+    Authorization included, so a redirect could leak the token or point the local backend at a
+    LAN or cloud-metadata address (hermes-agent PR #152842 review)."""
 
     def redirect_request(self, req, fp, code, msg, headers, newurl):
-        new = super().redirect_request(req, fp, code, msg, headers, newurl)
-        if new is not None and _host(newurl) != _host(req.full_url):
-            new.remove_header("Authorization")
-        return new
+        if not is_configured_server(newurl):
+            raise OffServerRequest(f"refused a redirect off the configured Speckle server to {_host(newurl)}")
+        return super().redirect_request(req, fp, code, msg, headers, newurl)
 
 
-_opener = urllib.request.build_opener(_TokenStaysOnHost)
+_opener = urllib.request.build_opener(_StayOnServer)
 
 
 def open_url(req: urllib.request.Request, timeout: float):
-    """urlopen for requests that may carry the token: it is dropped on a redirect off the host."""
+    """urlopen for the plugin's own HTTP calls. They only ever reach the configured Speckle server,
+    redirects included: URLs here can come from model output (a ::speckle-model directive), and
+    the server is the one host the user chose, LAN-hosted or not."""
+    if not is_configured_server(req.full_url):
+        raise OffServerRequest(f"refused a request off the configured Speckle server to {_host(req.full_url)}")
     return _opener.open(req, timeout=timeout)
 
 

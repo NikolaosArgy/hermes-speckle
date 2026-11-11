@@ -106,15 +106,20 @@ what you have selected in the viewer.
   | The same server: `/preview/…` | Preview images | Sent |
   | The file storage your server points to (signed links from the list above) | Downloading the model files | Not sent |
 
-  The token never goes to another host: not to a URL taken from a model or a message, and
-  not along a redirect, which drops it whenever the host changes. The file storage is
-  whatever your Speckle server uses; for `app.speckle.systems` it is Speckle's own cloud
-  storage. Its links are signed by the server and need no token.
+  The plugin's own requests (everything but the model file downloads) only ever reach your
+  Speckle server. A URL taken from a model or a message can't point them anywhere else, and
+  a redirect away from the server is refused, not followed. So the token never goes to
+  another host. The file storage is whatever your Speckle server uses; for
+  `app.speckle.systems` it is Speckle's own cloud storage. Its links are signed by the server
+  and need no token.
 - **The 3D viewer makes no network connections.** The viewer library (`@speckle/viewer`
   2.31.14 with three.js and its other dependencies) ships inside the plugin as
   `viewer/dist/speckle-viewer.js`, built from the pinned `viewer/package-lock.json`; nothing
-  is loaded from a CDN. It runs in Hermes's sandboxed frame, gets the model from the
-  plugin, and never receives your token. The licences of the 28 packages in it are in
+  is loaded from a CDN. Text in models uses a bundled font (Open Sans). Its text library
+  would otherwise download fonts from a CDN, so the build patches it to keep characters the
+  font lacks (Chinese, for example) as blank glyphs instead. The viewer runs in Hermes's
+  sandboxed frame, gets the model from the plugin, and never receives your token. The
+  licences of the 28 packages and the font in it are in
   [`viewer/dist/THIRD_PARTY_NOTICES.txt`](viewer/dist/THIRD_PARTY_NOTICES.txt).
 - **Background process.** While you watch at least one model, a background thread checks
   it for new versions every `poll_seconds` (60 by default, 15 minimum). Each check is one
@@ -150,7 +155,9 @@ node build.mjs --check
 To update the viewer, change the versions in `viewer/package.json`, run `npm install`, then
 `node build.mjs`, and commit `package-lock.json` and `dist/` together. The build stops if a
 bundled package has no licence text; add one under `viewer/licenses/` and map it in
-`LICENCE_OVERRIDES` in `build.mjs`.
+`LICENCE_OVERRIDES` in `build.mjs`. It also stops if its patch to troika-three-text (which
+keeps text rendering offline) no longer matches the troika source, which means a troika
+upgrade needs the patch reviewed.
 
 ## License
 
